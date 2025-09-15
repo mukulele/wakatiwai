@@ -78,7 +78,7 @@
 
 #ifdef LWM2M_CLIENT_MODE
 
-extern g_quit; // from lwm2mclient.c
+extern int g_quit; // from lwm2mclient.c
 
 static int prv_getRegistrationQueryLength(lwm2m_context_t * contextP,
                                           lwm2m_server_t * server)
