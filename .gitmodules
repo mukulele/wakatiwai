@@ -1,3 +1,3 @@
 [submodule "deps/wakaama"]
 	path = deps/wakaama
-	url = https://github.com/eclipse/wakaama.git
+	url = https://github.com/mukulele/lwm2m-signalk-wakaama.git
