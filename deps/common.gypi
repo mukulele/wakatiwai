@@ -19,10 +19,9 @@
       '<(wakaama_dtls_dir)/aes/rijndael.c',
       '<(wakaama_dtls_dir)/ecc/ecc.c',
     ],
-    'wakaama_core_dir': '<(deps_dir)/wakaama/core',
+  'wakaama_core_dir': '<(deps_dir)/wakaama/core',
     'wakaama_core_sources': [
-      '<(wakaama_core_dir)/er-coap-13/er-coap-13.c',
-
+      '<(deps_dir)/wakaama/coap/er-coap-13/er-coap-13.c',
       '<(wakaama_core_dir)/bootstrap.c',
       '<(wakaama_core_dir)/data.c',
       '<(wakaama_core_dir)/discover.c',
