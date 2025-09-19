@@ -1,0 +1,30 @@
+( gyp  wakatiwai.gyp --depth=. -f ninja --no-duplicate-basename-check -D project_name=wakatiwai -D out_file_name=wakatiwai && ninja -C out/Release)
+ninja: Entering directory `out/Release'
+[1/8] CC obj/deps/wakaama/core/liblwm2mclient.registration.o
+FAILED: obj/deps/wakaama/core/liblwm2mclient.registration.o 
+cc -MMD -MF obj/deps/wakaama/core/liblwm2mclient.registration.o.d -DLWM2M_LITTLE_ENDIAN=TRUE -DREST_MAX_CHUNK_SIZE=16384 -DLWM2M_BOOTSTRAP -DLWM2M_CLIENT_MODE -DLWM2M_SUPPORT_TLV -DWITH_TINYDTLS -DDTLSv12 -DWITH_SHA256 -DDTLS_PSK -DDTLS_ECC -DNDEBUG -I../../deps/wakaama -I../../deps/wakaama/coap/er-coap-13 -I../../deps/wakaama/coap -I../../deps/wakaama/core/er-coap-13 -I../../deps/wakaama/core -I../../deps/wakaama/include    -c ../../deps/wakaama/core/registration.c -o obj/deps/wakaama/core/liblwm2mclient.registration.o
+In file included from ../../deps/wakaama/core/bootstrap.h:20,
+                 from ../../deps/wakaama/core/internals.h:65,
+                 from ../../deps/wakaama/core/registration.c:58:
+../../deps/wakaama/core/registration.c: In function ‘registration_step’:
+../../deps/wakaama/coap/er-coap-13/er-coap-13.h:52:46: error: ‘LWM2M_COAP_DEFAULT_MAX_RETRANSMIT’ undeclared (first use in this function)
+   52 | #define COAP_MAX_RETRANSMIT                  LWM2M_COAP_DEFAULT_MAX_RETRANSMIT
+      |                                              ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../../deps/wakaama/coap/er-coap-13/er-coap-13.h:52:46: note: in definition of macro ‘COAP_MAX_RETRANSMIT’
+   52 | #define COAP_MAX_RETRANSMIT                  LWM2M_COAP_DEFAULT_MAX_RETRANSMIT
+      |                                              ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../../deps/wakaama/core/registration.c:2090:17: note: in expansion of macro ‘COAP_MAX_TRANSMIT_WAIT’
+ 2090 |             if (COAP_MAX_TRANSMIT_WAIT < nextUpdate)
+      |                 ^~~~~~~~~~~~~~~~~~~~~~
+../../deps/wakaama/coap/er-coap-13/er-coap-13.h:52:46: note: each undeclared identifier is reported only once for each function it appears in
+   52 | #define COAP_MAX_RETRANSMIT                  LWM2M_COAP_DEFAULT_MAX_RETRANSMIT
+      |                                              ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../../deps/wakaama/coap/er-coap-13/er-coap-13.h:52:46: note: in definition of macro ‘COAP_MAX_RETRANSMIT’
+   52 | #define COAP_MAX_RETRANSMIT                  LWM2M_COAP_DEFAULT_MAX_RETRANSMIT
+      |                                              ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../../deps/wakaama/core/registration.c:2090:17: note: in expansion of macro ‘COAP_MAX_TRANSMIT_WAIT’
+ 2090 |             if (COAP_MAX_TRANSMIT_WAIT < nextUpdate)
+      |                 ^~~~~~~~~~~~~~~~~~~~~~
+[2/8] CC obj/deps/wakaama/data/liblwm2mclient.data.o
+ninja: build stopped: subcommand failed.
+make: *** [Makefile:26: executable] Error 1

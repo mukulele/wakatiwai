@@ -33,6 +33,14 @@
 #include <signal.h>
 #include <inttypes.h>
 
+// Forward declarations of legacy callbacks (without context parameter)
+static uint8_t prv_generic_read(uint16_t instanceId, int * numDataP, lwm2m_data_t ** dataArrayP, lwm2m_object_t * objectP);
+static uint8_t prv_generic_discover(uint16_t instanceId, int * numDataP, lwm2m_data_t ** dataArrayP, lwm2m_object_t * objectP);
+static uint8_t prv_generic_write(uint16_t instanceId, int numData, lwm2m_data_t * dataArray, lwm2m_object_t * objectP);
+static uint8_t prv_generic_execute(uint16_t instanceId, uint16_t resourceId, uint8_t * buffer, int length, lwm2m_object_t * objectP);
+static uint8_t prv_generic_create(uint16_t instanceId, int numData, lwm2m_data_t * dataArray, lwm2m_object_t * objectP);
+static uint8_t prv_generic_delete(uint16_t instanceId, lwm2m_object_t * objectP);
+
 typedef struct
 {
     uint16_t objectId;
@@ -440,6 +448,52 @@ static uint8_t prv_generic_read(uint16_t instanceId,
     response_free(context);
     fprintf(stderr, "prv_generic_read:result=>0x%X\r\n", result);
     return result;
+}
+
+// Context-aware callback wrappers (liblwm2m API)
+static uint8_t prv_generic_read_cb(lwm2m_context_t * contextP, uint16_t instanceId,
+                                   int *numDataP, lwm2m_data_t **dataArrayP, lwm2m_object_t *objectP)
+{
+    (void)contextP;
+    return prv_generic_read(instanceId, numDataP, dataArrayP, objectP);
+}
+
+static uint8_t prv_generic_discover_cb(lwm2m_context_t * contextP, uint16_t instanceId,
+                                       int *numDataP, lwm2m_data_t **dataArrayP, lwm2m_object_t *objectP)
+{
+    (void)contextP;
+    return prv_generic_discover(instanceId, numDataP, dataArrayP, objectP);
+}
+
+static uint8_t prv_generic_write_cb(lwm2m_context_t * contextP, uint16_t instanceId,
+                                    int numData, lwm2m_data_t *dataArray, lwm2m_object_t *objectP,
+                                    lwm2m_write_type_t writeType)
+{
+    (void)contextP;
+    (void)writeType;
+    return prv_generic_write(instanceId, numData, dataArray, objectP);
+}
+
+static uint8_t prv_generic_execute_cb(lwm2m_context_t * contextP, uint16_t instanceId,
+                                      uint16_t resourceId, uint8_t *buffer, int length,
+                                      lwm2m_object_t *objectP)
+{
+    (void)contextP;
+    return prv_generic_execute(instanceId, resourceId, buffer, length, objectP);
+}
+
+static uint8_t prv_generic_create_cb(lwm2m_context_t * contextP, uint16_t instanceId,
+                                     int numData, lwm2m_data_t *dataArray, lwm2m_object_t *objectP)
+{
+    (void)contextP;
+    return prv_generic_create(instanceId, numData, dataArray, objectP);
+}
+
+static uint8_t prv_generic_delete_cb(lwm2m_context_t * contextP, uint16_t instanceId,
+                                     lwm2m_object_t *objectP)
+{
+    (void)contextP;
+    return prv_generic_delete(instanceId, objectP);
 }
 
 static uint16_t lwm2m_get_payload_size(int numData,
@@ -876,13 +930,14 @@ lwm2m_object_t * get_object(uint16_t objectId)
         return NULL;
     }
 
-    genericObj->readFunc     = prv_generic_read;
-    genericObj->discoverFunc = prv_generic_discover;
-    genericObj->writeFunc    = prv_generic_write;
-    genericObj->executeFunc  = prv_generic_execute;
+    // Wrappers adapt legacy signatures to context-aware callbacks
+    genericObj->readFunc     = prv_generic_read_cb;
+    genericObj->discoverFunc = prv_generic_discover_cb;
+    genericObj->writeFunc    = prv_generic_write_cb;
+    genericObj->executeFunc  = prv_generic_execute_cb;
     if (LWM2M_DEVICE_OBJECT_ID != objectId) {
-        genericObj->createFunc   = prv_generic_create;
-        genericObj->deleteFunc   = prv_generic_delete;
+        genericObj->createFunc   = prv_generic_create_cb;
+        genericObj->deleteFunc   = prv_generic_delete_cb;
     }
 
     return genericObj;

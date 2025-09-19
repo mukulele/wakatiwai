@@ -146,7 +146,7 @@ void * lwm2m_connect_server(uint16_t secObjInstID,
 
     dataP = (client_data_t *)userData;
 
-    uri = server_get_uri(dataP->securityObjP, secObjInstID);
+    uri = server_get_uri(dataP->lwm2mH, dataP->securityObjP, secObjInstID);
 
     if (uri == NULL) return NULL;
 
@@ -277,13 +277,13 @@ void print_usage(void)
     fprintf(stderr, "\r\n");
 }
 
-static char * server_get_uri(lwm2m_object_t * obj, uint16_t instanceId) {
+static char * server_get_uri(lwm2m_context_t * contextP, lwm2m_object_t * obj, uint16_t instanceId) {
     int size = 1;
     lwm2m_data_t * dataP = lwm2m_data_new(size);
     dataP->id = 0; // security server uri
     char * uriBuffer;
 
-    obj->readFunc(instanceId, &size, &dataP, obj);
+    obj->readFunc(contextP, instanceId, &size, &dataP, obj);
     if (dataP != NULL &&
             (dataP->type == LWM2M_TYPE_STRING || dataP->type == LWM2M_TYPE_OPAQUE) &&
             dataP->value.asBuffer.length > 0) {

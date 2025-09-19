@@ -23,52 +23,41 @@
     'wakaama_core_sources': [
       '<(deps_dir)/wakaama/coap/er-coap-13/er-coap-13.c',
       '<(wakaama_core_dir)/bootstrap.c',
-      '<(wakaama_core_dir)/data.c',
+      # Use modern data layer from deps/wakaama/data
+      '<(deps_dir)/wakaama/data/data.c',
       '<(wakaama_core_dir)/discover.c',
       '<(wakaama_core_dir)/liblwm2m.c',
       '<(wakaama_core_dir)/list.c',
       '<(wakaama_core_dir)/management.c',
       '<(wakaama_core_dir)/objects.c',
       '<(wakaama_core_dir)/observe.c',
+      '<(wakaama_core_dir)/registration.c',
       '<(wakaama_core_dir)/packet.c',
-      '<(wakaama_core_dir)/tlv.c',
-      '<(wakaama_core_dir)/transaction.c',
+      # Use coap/transaction.c implementation (provides transaction_set_payload and transaction_free_userData)
+      '<(deps_dir)/wakaama/coap/transaction.c',
       '<(wakaama_core_dir)/uri.c',
       '<(wakaama_core_dir)/utils.c',
     ],
     'wakaama_example_dir': '<(deps_dir)/wakaama/examples',
     'wakaama_client_dir': '<(wakaama_example_dir)/client',
     'wakaama_shared_dir': '<(wakaama_example_dir)/shared',
-    'wakaama_client_shared_sources': [
-      '<(wakaama_shared_dir)/commandline.c',
-      '<(wakaama_shared_dir)/memtrace.c',
-      '<(wakaama_shared_dir)/platform.c',
-    ],
-    'wakaama_server_shared_sources': [
-      '<(wakaama_shared_dir)/commandline.c',
-      '<(wakaama_shared_dir)/connection.c',  # Plain Connection
-      '<(wakaama_shared_dir)/memtrace.c',
-      '<(wakaama_shared_dir)/platform.c',
-    ],
+    'wakaama_client_shared_sources': [],
+    'wakaama_server_shared_sources': [],
     'wakaama_server_dir': '<(wakaama_example_dir)/server',
-    'wakaama_server_sources': [
-      '<(wakaama_server_dir)/lwm2mserver.c',
-      '<(wakaama_core_dir)/registration.c',  # non-customized registration.c
-    ],
+    'wakaama_server_sources': [],
     'wakaama_bootstrap_server_dir': '<(wakaama_example_dir)/bootstrap_server',
-    'wakaama_bootstrap_server_sources': [
-      '<(wakaama_bootstrap_server_dir)/bootstrap_info.c',
-      '<(wakaama_bootstrap_server_dir)/bootstrap_server.c',
-      '<(wakaama_core_dir)/registration.c',  # non-customized registration.c
-    ],
+    'wakaama_bootstrap_server_sources': [],
     'wakaama_defines': [
       'LWM2M_LITTLE_ENDIAN=<!(python <(deps_dir)/endianess.py)',
       'REST_MAX_CHUNK_SIZE=<(rest_max_chunk_size)',
+      'LWM2M_COAP_DEFAULT_MAX_RETRANSMIT=4',
+      'LWM2M_COAP_SEPARATE_TIMEOUT=5',
     ],
     'wakaama_client_defines': [
       '<@(wakaama_defines)',
       'LWM2M_BOOTSTRAP',
       'LWM2M_CLIENT_MODE',
+      'LWM2M_SUPPORT_TLV',
       'WITH_TINYDTLS',
       'DTLSv12',
       'WITH_SHA256',

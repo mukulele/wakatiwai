@@ -45,12 +45,12 @@
 dtls_context_t * dtlsContext;
 
 /********************* Security Obj Helpers **********************/
-char * security_get_uri(lwm2m_object_t * obj, int instanceId, char * uriBuffer, int bufferSize){
+char * security_get_uri(lwm2m_context_t * contextP, lwm2m_object_t * obj, int instanceId, char * uriBuffer, int bufferSize){
     int size = 1;
     lwm2m_data_t * dataP = lwm2m_data_new(size);
     dataP->id = 0; // security server uri
 
-    obj->readFunc(instanceId, &size, &dataP, obj);
+    obj->readFunc(contextP, (uint16_t)instanceId, &size, &dataP, obj);
     if (dataP != NULL &&
             (dataP->type == LWM2M_TYPE_STRING || dataP->type == LWM2M_TYPE_OPAQUE) &&
             dataP->value.asBuffer.length > 0)
@@ -66,13 +66,13 @@ char * security_get_uri(lwm2m_object_t * obj, int instanceId, char * uriBuffer, 
     return NULL;
 }
 
-int64_t security_get_mode(lwm2m_object_t * obj, int instanceId){
+int64_t security_get_mode(lwm2m_context_t * contextP, lwm2m_object_t * obj, int instanceId){
     int64_t mode;
     int size = 1;
     lwm2m_data_t * dataP = lwm2m_data_new(size);
     dataP->id = 2; // security mode
 
-    obj->readFunc(instanceId, &size, &dataP, obj);
+    obj->readFunc(contextP, (uint16_t)instanceId, &size, &dataP, obj);
     if (0 != lwm2m_data_decode_int(dataP,&mode))
     {
         lwm2m_data_free(size, dataP);
@@ -84,12 +84,12 @@ int64_t security_get_mode(lwm2m_object_t * obj, int instanceId){
     return LWM2M_SECURITY_MODE_NONE;
 }
 
-char * security_get_public_id(lwm2m_object_t * obj, int instanceId, int * length){
+char * security_get_public_id(lwm2m_context_t * contextP, lwm2m_object_t * obj, int instanceId, int * length){
     int size = 1;
     lwm2m_data_t * dataP = lwm2m_data_new(size);
     dataP->id = 3; // public key or id
 
-    obj->readFunc(instanceId, &size, &dataP, obj);
+    obj->readFunc(contextP, (uint16_t)instanceId, &size, &dataP, obj);
     if (dataP != NULL &&
         dataP->type == LWM2M_TYPE_OPAQUE)
     {
@@ -110,12 +110,12 @@ char * security_get_public_id(lwm2m_object_t * obj, int instanceId, int * length
 }
 
 
-char * security_get_secret_key(lwm2m_object_t * obj, int instanceId, int * length){
+char * security_get_secret_key(lwm2m_context_t * contextP, lwm2m_object_t * obj, int instanceId, int * length){
     int size = 1;
     lwm2m_data_t * dataP = lwm2m_data_new(size);
     dataP->id = 5; // secret key
 
-    obj->readFunc(instanceId, &size, &dataP, obj);
+    obj->readFunc(contextP, (uint16_t)instanceId, &size, &dataP, obj);
     if (dataP != NULL &&
         dataP->type == LWM2M_TYPE_OPAQUE)
     {
@@ -206,7 +206,7 @@ static int get_psk_info(struct dtls_context_t *ctx,
         {
             int idLen;
             char * id;
-            id = security_get_public_id(cnx->securityObj, cnx->securityInstId, &idLen);
+            id = security_get_public_id(cnx->lwm2mH, cnx->securityObj, cnx->securityInstId, &idLen);
             if (result_length < idLen)
             {
                 fprintf(stderr, "cannot set psk_identity -- buffer too small\n");
@@ -221,7 +221,7 @@ static int get_psk_info(struct dtls_context_t *ctx,
         {
             int keyLen;
             char * key;
-            key = security_get_secret_key(cnx->securityObj, cnx->securityInstId, &keyLen);
+            key = security_get_secret_key(cnx->lwm2mH, cnx->securityObj, cnx->securityInstId, &keyLen);
 
             if (result_length < keyLen)
             {
@@ -467,7 +467,7 @@ dtls_connection_t * connection_create(dtls_connection_t * connList,
     hints.ai_family = addressFamily;
     hints.ai_socktype = SOCK_DGRAM;
 
-    uri = security_get_uri(securityObj, instanceId, uriBuf, URI_LENGTH);
+    uri = security_get_uri(lwm2mH, securityObj, instanceId, uriBuf, URI_LENGTH);
     if (uri == NULL) return NULL;
 
     // parse uri in the form "coaps://[host]:[port]"
@@ -541,7 +541,7 @@ dtls_connection_t * connection_create(dtls_connection_t * connList,
             connP->securityInstId = instanceId;
             connP->lwm2mH = lwm2mH;
 
-            if (security_get_mode(connP->securityObj,connP->securityInstId)
+            if (security_get_mode(connP->lwm2mH, connP->securityObj, connP->securityInstId)
                      != LWM2M_SECURITY_MODE_NONE)
             {
                 connP->dtlsContext = get_dtls_context(connP);

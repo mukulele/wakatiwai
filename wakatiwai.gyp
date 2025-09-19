@@ -22,14 +22,16 @@
       'target_name': '<(executable)',
       'type': 'executable',
       'include_dirs': [
-        '<(wakaama_core_dir)',
-        '<(wakaama_shared_dir)',
-        '<(wakaama_shared_dir)/tinydtls',
-        '<(deps_dir)/tinydtls',
-        '<(deps_dir)',
-        '<(client_dir)',
-        '<(src_dir)',
-        '<(base64_dir)',
+  '<(wakaama_core_dir)',
+  '<(wakaama_core_dir)/er-coap-13',
+  '<(deps_dir)/wakaama/coap/er-coap-13',
+  '<(wakaama_shared_dir)',
+  '<(wakaama_shared_dir)/tinydtls',
+  '<(deps_dir)/tinydtls',
+  '<(deps_dir)',
+  '<(client_dir)',
+  '<(src_dir)',
+  '<(base64_dir)',
       ],
       'dependencies': [
         '<(deps_dir)/wakaama.gyp:libbase64',
@@ -43,8 +45,11 @@
         '<(client_dir)/lwm2mclient.c',
         '<(client_dir)/object_generic.c',
         '<(client_dir)/dtlsconnection.c',  # DTLS Connection
-        '<(client_dir)/registration.c',
-        '<(client_dir)/block1.c',
+        # '<(client_dir)/registration.c',  # legacy; not compatible with current core
+        # '<(client_dir)/block1.c',       # legacy; superseded by core block handling
+        # Platform and shared helpers from Wakaama examples (memory/time and output_buffer)
+        '<(wakaama_shared_dir)/platform.c',
+        '<(wakaama_shared_dir)/commandline.c',
       ],
       'cflags_cc': [
         '-Wno-unused-value',
@@ -58,16 +63,12 @@
       'target_name': 'action_after_build',
       'type': 'none',
       'dependencies': [
-        '<(deps_dir)/wakaama.gyp:lwm2mserver',
-        '<(deps_dir)/wakaama.gyp:bootstrapserver',
         '<(executable)',
       ],
       'copies': [
         {
           'files': [
             '<(bootstrap_server_dir)/bootstrap_server.ini',
-            '<(PRODUCT_DIR)/bootstrapserver',
-            '<(PRODUCT_DIR)/lwm2mserver',
             '<(PRODUCT_DIR)/<(executable)',
           ],
           'destination': '<(module_path)'
