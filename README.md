@@ -5,6 +5,19 @@ Wakatiwai is a revised version of Eclipse Wakaama LwM2M Client, providing IPC I/
 
 Notice! The IPC communication is NOT encrypted and doesn't contain any authentication mechanism between processes.
 
+## 2025 Modernization & Compatibility Update
+
+This project has been updated from the original source at https://github.com/CANDY-LINE/wakatiwai/tree/master/src with the following key changes:
+
+- **Modernized Wakaama Integration:** Uses the latest Wakaama data, TLV, and CoAP transaction implementations from the wakaama submodule. Build files and includes are updated to avoid legacy/duplicate sources.
+- **Callback and API Compatibility:** Added wrapper functions for object callbacks (read, write, discover, execute, create, delete) to match new context-aware Wakaama API signatures. Function pointers and call sites updated accordingly.
+- **Logging System Updates:** Introduced compatibility macros in `logging.h` to map legacy `LOG`, `LOG_ARG`, and `LOG_URI` macros to the new logging system.
+- **Const-Correctness and Buffer Handling:** Updated function signatures in data handling to use `const uint8_t *` for buffer arguments, improving type safety.
+- **Build System and Defines:** Added/updated build defines for CoAP retransmit and timeout settings. Cleaned up GYP build files for correct source inclusion and macro definitions.
+- **Submodule and Superproject Sync:** All changes to Wakaama core sources are committed on a dedicated feature branch in the submodule and referenced from the superproject.
+
+These changes focus on compatibility, maintainability, and build hygiene. No major new features were added.
+
 LwM2M DM Server and Bootstrap Server are never modified in this project but you can build them as well as Wakatiwai client.
 
 Server programs are out of Wakatiwai project scope so there are no TODOs for LwM2M Server stuff.
